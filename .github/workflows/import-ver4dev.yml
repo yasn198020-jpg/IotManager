@@ -1,6 +1,7 @@
 name: Import IoTManager ver4dev
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -22,7 +23,7 @@ jobs:
           rm -rf /tmp/iotmanager-source
           git clone --depth 1 --branch ver4dev https://github.com/IoTManagerProject/IoTManager.git /tmp/iotmanager-source
           rsync -a --delete --exclude='.git' /tmp/iotmanager-source/ ./
-          
+
       - name: Commit imported source
         run: |
           git config user.name "github-actions[bot]"
