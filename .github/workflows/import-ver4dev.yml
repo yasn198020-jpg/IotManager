@@ -1,0 +1,36 @@
+name: Import IoTManager ver4dev
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout destination repository
+        uses: actions/checkout@v4
+
+      - name: Import ver4dev snapshot
+        run: |
+          set -e
+          rm -rf /tmp/iotmanager-source
+          git clone --depth 1 --branch ver4dev https://github.com/IoTManagerProject/IoTManager.git /tmp/iotmanager-source
+          rsync -a --delete --exclude='.git' /tmp/iotmanager-source/ ./
+          
+      - name: Commit imported source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Import IoTManager ver4dev base"
+          git push origin HEAD:main
